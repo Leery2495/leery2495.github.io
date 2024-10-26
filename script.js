@@ -74,6 +74,7 @@ async function sendEffect(MAIN_EFFECT, TAIL_CODE) {
     //console.log("Effect bits", effect_bits);
     const arduino_string_ver = bits_to_arduino_string(effect_bits);
     //console.log("board string", arduino_string_ver);
+    console.log(new TextEncoder().encode(arduino_string_ver);
     await writer.write(new TextEncoder().encode(arduino_string_ver));
     await new Promise(resolve => setTimeout(resolve, 100));
     // write to the serial port as bytes(arduino_string_ver, 'utf-8')
