@@ -1,45 +1,3 @@
-let port; let writer; let isConnected = false; let connectBtn = document.getElementById('connectBtn');
-
-connectBtn.addEventListener('click', function() {
-    if (isConnected) {
-        disconnectSerial();
-    } else {
-        connectSerial();
-    }
-});
-
-async function disconnectSerial() {
-    writer.releaseLock();
-    //console.log('Disconnecting from board...');
-    showNotification("Device disconnected!", "disconnected");
-    isConnected = false;
-    connectBtn.classList.remove('btn-disconnect');
-    connectBtn.classList.add('btn-connect');
-    connectBtn.innerText = 'Connect board';
-    port.close();
-}
-
-async function connectSerial() {
-
-    if (navigator.serial) {
-        try {
-            port = await navigator.serial.requestPort();
-            await port.open({ baudRate: 115200 });
-            writer = port.writable.getWriter();
-            //console.log('Connecting to board...');
-            isConnected = true;
-            showNotification("Device connected successfully!", "connected");
-            connectBtn.classList.remove('btn-connect');
-            connectBtn.classList.add('btn-disconnect');
-            connectBtn.innerText = 'Disconnect from board';        
-        } catch (err) {
-            disconnectSerial();
-        }
-    } else {
-        alert('Web Serial API not supported.');
-    }
-}
-
 document.getElementById('ledForm').addEventListener('submit', function(event) {
     event.preventDefault();
     var mainEffect = document.getElementById('main-effect').value;
@@ -122,28 +80,6 @@ async function sendEffect(MAIN_EFFECT, TAIL_CODE) {
     //console.log("Command sent!");
 }
 
-// JavaScript to toggle the modal
-var helpModal = document.getElementById('helpModal');
-var helpIcon = document.getElementById('helpIcon');
-var closeModal = document.getElementsByClassName('close')[0];
-
-// Open the modal when the ? icon is clicked
-helpIcon.onclick = function() {
-    helpModal.style.display = 'block';
-}
-
-// Close the modal when the close button is clicked
-closeModal.onclick = function() {
-    helpModal.style.display = 'none';
-}
-
-// Close the modal when anywhere outside the modal is clicked
-window.onclick = function(event) {
-    if (event.target == helpModal) {
-        helpModal.style.display = 'none';
-    }
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     let selectElement = document.getElementById("main-effect");
     // Function to add options to select element
@@ -179,29 +115,4 @@ async function fadeColors() {
         sendEffect(fadecolors[i], 'FADE_2');
         await new Promise(resolve => setTimeout(resolve, 2000));
     }
-}
-
-function showNotification(message, type) {
-    const notification = document.getElementById("notification");
-
-    // Set the message and background color based on the type
-    notification.textContent = message;
-    if (type === "connected") {
-        notification.style.backgroundColor = "#4CAF50"; // Green for connected
-    } else if (type === "disconnected") {
-        notification.style.backgroundColor = "#f44336"; // Red for disconnected
-    }
-
-    notification.classList.remove("hide");
-    notification.classList.add("show");
-    notification.style.display = "block";
-
-    // Hide the notification after 3 seconds
-    setTimeout(() => {
-        notification.classList.remove("show");
-        notification.classList.add("hide");
-        setTimeout(() => {
-            notification.style.display = "none";
-        }, 300); // Match this duration with the CSS transition
-    }, 3000);
 }
